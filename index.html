@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Life">
+<meta name="theme-color" content="#09090b">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Life</title>
+<style>
+:root{
+  --bg:#09090b; --card:#18181b; --card2:#27272a;
+  --border:rgba(255,255,255,0.07);
+  --accent:#f97316; --ad:rgba(249,115,22,.13); --ag:rgba(249,115,22,.22);
+  --text:#fafafa; --t2:#a1a1aa; --t3:#71717a; --t4:#3f3f46;
+  --green:#22c55e; --gd:rgba(34,197,94,.12);
+  --blue:#3b82f6;  --bd:rgba(59,130,246,.12);
+  --yellow:#eab308;--yd:rgba(234,179,8,.12);
+  --red:#ef4444;   --rd:rgba(239,68,68,.12);
+  --r:14px; --rsm:10px;
+  --nb:72px; --sb:env(safe-area-inset-bottom,0px); --st:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;overflow:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--t4);border-radius:99px}
+
+/* SIDEBAR */
+.sidebar{width:230px;min-width:230px;background:#0d0d0f;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0 20px;height:100vh}
+.sb-logo{padding:0 20px 28px;font-size:17px;font-weight:700;letter-spacing:-.5px}
+.sb-logo em{color:var(--accent);font-style:normal}
+.sb-grp{padding:0 10px;margin-bottom:4px}
+.sb-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--t4);padding:0 10px;margin-bottom:4px;font-weight:600}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rsm);cursor:pointer;color:var(--t3);font-size:14px;font-weight:500;transition:all .15s;user-select:none}
+.sb-item:hover{background:var(--card);color:var(--text)}
+.sb-item.active{background:var(--ad);color:var(--accent)}
+.sb-item .icon{font-size:16px;width:22px;text-align:center}
+.sb-space{flex:1}
+
+/* LAYOUT */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;height:100vh}
+.content{flex:1;overflow-y:auto;padding:28px 24px calc(var(--nb) + var(--sb) + 16px)}
+@media(min-width:768px){.content{padding:32px 36px 32px}.bnav{display:none!important}}
+@media(max-width:767px){.sidebar{display:none!important}}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nb) + var(--sb));padding-bottom:var(--sb);background:rgba(13,13,15,.93);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:50}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:var(--t3);font-size:11px;font-weight:500;padding-top:4px;transition:color .2s}
+.bn .icon{font-size:22px;line-height:1;transition:transform .2s}
+.bn.active{color:var(--accent)}
+.bn.active .icon{transform:scale(1.15)}
+
+/* SECTIONS */
+.section{display:none;animation:fadeUp .2s ease}
+.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION HEADERS */
+.ph{margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-start}
+.ph-title{font-size:26px;font-weight:800;letter-spacing:-.8px}
+.ph-sub{color:var(--t2);font-size:14px;margin-top:3px}
+
+/* SUB HEADERS within sections */
+.sh{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-weight:600;margin:22px 0 10px;display:flex;justify-content:space-between;align-items:center}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:14px}
+.ct{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-weight:600;margin-bottom:14px}
+.cr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cr .ct{margin-bottom:0}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:480px){.g3{grid-template-columns:1fr 1fr}}
+
+/* STAT TILES */
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px}
+.stat-lbl{font-size:12px;color:var(--t2);margin-bottom:6px}
+.stat-val{font-size:30px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:99px;font-size:13px;font-weight:600;margin-right:8px;margin-bottom:8px}
+.chip-o{background:var(--ad);color:var(--accent);border:1px solid rgba(249,115,22,.2)}
+.chip-g{background:var(--gd);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--rsm);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.btn-p{background:var(--accent);color:#fff}
+.btn-p:hover{background:#fb923c}
+.btn-p:active{transform:scale(.97)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--border)}
+.btn-g:hover{background:var(--card2);color:var(--text)}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn-rd{background:var(--rd);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-ai{background:linear-gradient(135deg,#7c3aed,#f97316);color:#fff;font-weight:700}
+.btn-ai:hover{opacity:.9}
+
+/* INPUTS */
+input,textarea,select{background:var(--card2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text);font-size:14px;padding:10px 13px;width:100%;outline:none;font-family:inherit;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+select option{background:var(--card2)}
+label{font-size:13px;color:var(--t2);display:block;margin-bottom:6px;font-weight:500}
+.fg{margin-bottom:14px}
+.fg:last-child{margin-bottom:0}
+
+/* INLINE INPUT */
+.ii{background:transparent;border:none;border-bottom:2px solid var(--t4);border-radius:0;padding:2px 0;font-weight:800;color:var(--text);outline:none;transition:border-color .15s}
+.ii:focus{border-bottom-color:var(--accent)}
+
+/* PROGRESS */
+.bar{height:5px;background:var(--card2);border-radius:99px;overflow:hidden;margin-top:10px}
+.bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.bar-g{background:var(--green)}
+.bar-b{background:var(--blue)}
+
+/* ENERGY */
+.erow{display:flex;gap:10px;margin-top:4px}
+.edot{width:40px;height:40px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .15s;background:var(--card2)}
+.edot.sel{border-color:var(--accent);background:var(--ad);transform:scale(1.12)}
+.edot:active{transform:scale(.95)}
+
+/* WATER */
+.wrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.wbottle{width:38px;height:50px;border:2px solid var(--t4);border-radius:4px 4px 6px 6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:transparent}
+.wbottle::before{content:'';position:absolute;bottom:0;left:0;right:0;height:0;background:var(--blue);transition:height .3s;opacity:.7}
+.wbottle.full{border-color:var(--blue)}
+.wbottle.full::before{height:100%}
+.wbottle .wlbl{position:relative;z-index:1;font-size:9px;font-weight:700;padding-bottom:4px;color:var(--t3)}
+.wbottle.full .wlbl{color:#fff}
+
+/* SPLIT CYCLE */
+.split-track{display:flex;flex-direction:column;gap:5px}
+.split-row{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:var(--rsm);border:1px solid transparent;transition:all .15s}
+.split-row.today{background:var(--ad);border-color:rgba(249,115,22,.3)}
+.split-row.done{opacity:.3}
+.split-num{font-size:11px;color:var(--t3);width:36px}
+.split-name{font-weight:600;font-size:14px;flex:1}
+
+/* CALENDAR */
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.cal-nav-lbl{font-size:15px;font-weight:700}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.ch{text-align:center;font-size:11px;color:var(--t3);padding:4px 0;font-weight:600}
+.cd{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:var(--rsm);cursor:pointer;font-size:13px;position:relative;transition:all .1s}
+.cd:hover{background:var(--card2)}
+.cd.today{background:var(--accent);color:#fff;font-weight:700}
+.cd.has-ev::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.cd.today.has-ev::after{background:rgba(255,255,255,.7)}
+.cd.om{color:var(--t4)}
+
+/* LIST ITEMS */
+.li{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--border)}
+.li:last-child{border-bottom:none}
+.li-info{flex:1;min-width:0}
+.li-title{font-size:14px;font-weight:500}
+.li-sub{font-size:12px;color:var(--t2);margin-top:2px}
+
+/* LOG ROWS */
+.lr{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);gap:10px}
+.lr:last-child{border-bottom:none}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
+.tag-o{background:var(--ad);color:var(--accent)}
+.tag-g{background:var(--gd);color:var(--green)}
+.tag-b{background:var(--bd);color:var(--blue)}
+.tag-y{background:var(--yd);color:var(--yellow)}
+.tag-r{background:var(--rd);color:var(--red)}
+
+/* SLEEP CHART */
+.sc{display:flex;align-items:flex-end;gap:6px;height:72px}
+.sc-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sc-bar{width:100%;border-radius:4px 4px 0 0;transition:height .4s;min-height:3px}
+.sc-lbl{font-size:10px;color:var(--t3)}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+@media(min-width:600px){.overlay{align-items:center}}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;padding:24px 22px calc(24px + var(--sb));width:100%;max-height:85vh;overflow-y:auto;animation:slideUp .25s cubic-bezier(.4,0,.2,1)}
+@media(min-width:600px){.modal{border-radius:var(--r);max-width:460px;padding:26px;animation:fadeUp .2s ease}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.mt{font-size:18px;font-weight:800;letter-spacing:-.4px}
+.mx{cursor:pointer;color:var(--t2);font-size:22px;line-height:1;padding:2px}
+
+/* EXERCISE ROWS */
+.exrow{display:grid;grid-template-columns:1fr 60px 60px 68px 24px;gap:6px;align-items:center;margin-bottom:7px}
+
+/* TOAST */
+.tw{position:fixed;bottom:calc(var(--nb) + var(--sb) + 14px);left:50%;transform:translateX(-50%);z-index:300;pointer-events:none}
+@media(min-width:768px){.tw{bottom:24px}}
+.toast{background:var(--card2);border:1px solid var(--border);border-radius:99px;padding:10px 18px;font-size:13px;font-weight:500;white-space:nowrap;animation:fadeUp .2s ease;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+
+/* EMPTY */
+.empty{text-align:center;padding:28px 16px;color:var(--t3)}
+.empty .icon{font-size:32px;margin-bottom:10px}
+.empty p{font-size:13px}
+
+/* ALERT BANNERS */
+.banner{border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.b-red{background:var(--rd);border:1px solid rgba(239,68,68,.22)}
+.b-orange{background:var(--ad);border:1px solid rgba(249,115,22,.22)}
+.b-blue{background:var(--bd);border:1px solid rgba(59,130,246,.22)}
+
+/* MEAL CARD */
+.meal-thumb{width:56px;height:56px;border-radius:var(--rsm);object-fit:cover;flex-shrink:0}
+.ai-result{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(249,115,22,.12));border:1px solid rgba(124,58,237,.2);border-radius:var(--rsm);padding:12px 14px;margin-top:12px;font-size:13px;line-height:1.6}
+.ai-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#7c3aed,#f97316);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-bottom:6px}
+
+/* LOADING SPINNER */
+.spin{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* PIPE DOTS */
+.pdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+
+/* DIVIDER */
+.div{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+/* STEPS AUTO BADGE */
+.auto-badge{display:inline-flex;align-items:center;gap:4px;background:var(--gd);color:var(--green);font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;margin-left:8px}
+
+/* ── MOBILE OPTIMISATIONS ── */
+@media(max-width:767px){
+  /* Prevent iOS auto-zoom on input focus (requires 16px) */
+  input:not(.ii),textarea,select{font-size:16px!important}
+
+  /* Compact layout — save vertical space */
+  .content{padding:18px 14px calc(var(--nb) + var(--sb) + 14px)}
+  .card{padding:14px 15px}
+  .ph{margin-bottom:16px}
+  .ph-title{font-size:22px}
+  .sh{margin:18px 0 8px}
+
+  /* Proper touch targets (44px min) */
+  .btn{min-height:44px;padding:10px 16px}
+  .btn-sm{min-height:36px;padding:8px 12px}
+  .edot{width:38px;height:38px;font-size:18px}
+
+  /* Stack check-in & week stat grids on mobile */
+  .g3{grid-template-columns:1fr 1fr}
+
+  /* Compact exercise rows in workout modal */
+  .exrow{grid-template-columns:1fr 44px 44px 52px 22px;gap:4px}
+
+  /* Water bottles — bit more touch-friendly */
+  .wbottle{width:36px;height:48px}
+
+  /* Ensure chips wrap neatly */
+  .chip{margin-right:6px;margin-bottom:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR (desktop) -->
+<nav class="sidebar">
+  <div class="sb-logo">Life <em>·</em> Mitch</div>
+  <div class="sb-grp">
+    <div class="sb-lbl">Daily</div>
+    <div class="sb-item active" data-nav="today"><span class="icon">☀️</span>Today</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-lbl">Schedule</div>
+    <div class="sb-item" data-nav="schedule"><span class="icon">📅</span>Calendar & Appointments</div>
+  </div>
+  <div class="sb-grp">
+    <div class="sb-lbl">Business</div>
+    <div class="sb-item" data-nav="f35"><span class="icon">🚗</span>Floor35</div>
+  </div>
+  <div class="sb-space"></div>
+  <div class="sb-grp">
+    <div class="sb-item" data-nav="settings"><span class="icon">⚙️</span>Settings</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+<div class="content" id="content">
+
+<!-- ══════════ TODAY ══════════ -->
+<div class="section active" id="s-today">
+
+  <div class="ph">
+    <div>
+      <div class="ph-title" id="greeting">Hey Mitch 👋</div>
+      <div class="ph-sub" id="today-date"></div>
+    </div>
+    <button class="btn btn-g btn-sm" data-nav="settings">⚙️</button>
+  </div>
+
+  <!-- Countdown chips -->
+  <div id="chips" style="margin-bottom:20px"></div>
+
+  <!-- ── CHECK-IN ── -->
+  <div class="sh">Check-in</div>
+
+  <div class="g3" style="margin-bottom:14px">
+    <div class="stat">
+      <div class="stat-lbl">Sleep</div>
+      <div style="display:flex;align-items:baseline;gap:5px">
+        <input class="ii" type="number" id="t-sleep" min="1" max="15" step="0.5" placeholder="—" style="width:52px;font-size:26px" oninput="saveTodayField('sleep',this.value);syncSleepLog()">
+        <span style="font-size:13px;color:var(--t2)">hrs</span>
+      </div>
+      <div style="margin-top:8px">
+        <select id="t-sleep-q" style="font-size:12px;padding:5px 8px" onchange="saveTodayField('sleepQ',this.value);syncSleepLog()">
+          <option value="">Quality…</option>
+          <option value="great">😴 Great</option>
+          <option value="good">🙂 Good</option>
+          <option value="okay">😐 Okay</option>
+          <option value="poor">😩 Poor</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-lbl">
+        Steps
+        <span class="auto-badge" id="steps-auto-badge" style="display:none">⚡ Auto</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:4px">
+        <input class="ii" type="number" id="t-steps" min="0" max="99999" placeholder="0" style="width:72px;font-size:22px" oninput="saveTodayField('steps',this.value);updateStepBar()">
+        <span style="font-size:11px;color:var(--t2)">/10k</span>
+      </div>
+      <div class="bar" style="margin-top:8px"><div class="bar-fill bar-g" id="step-bar" style="width:0%"></div></div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-lbl">Energy</div>
+      <div class="erow" style="gap:7px;margin-top:2px">
+        <div class="edot" id="e1" onclick="setEnergy(1)" style="width:34px;height:34px;font-size:16px">😴</div>
+        <div class="edot" id="e2" onclick="setEnergy(2)" style="width:34px;height:34px;font-size:16px">😐</div>
+        <div class="edot" id="e3" onclick="setEnergy(3)" style="width:34px;height:34px;font-size:16px">🙂</div>
+        <div class="edot" id="e4" onclick="setEnergy(4)" style="width:34px;height:34px;font-size:16px">😊</div>
+        <div class="edot" id="e5" onclick="setEnergy(5)" style="width:34px;height:34px;font-size:16px">🔥</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WORKOUT ── -->
+  <div class="sh">
+    Workout
+    <button class="btn btn-p btn-sm" onclick="openModal('m-workout')">+ Log session</button>
+  </div>
+
+  <div class="card" style="margin-bottom:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:22px;font-weight:800;letter-spacing:-.5px" id="t-workout-name">—</div>
+        <div id="t-workout-tag" style="margin-top:5px"></div>
+      </div>
+    </div>
+    <div class="split-track" id="split-track"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn btn-g btn-sm" onclick="shiftSplit(-1)">← Back</button>
+      <button class="btn btn-g btn-sm" onclick="shiftSplit(1)">Forward →</button>
+    </div>
+  </div>
+
+  <!-- Week stats -->
+  <div class="g3" style="margin-bottom:14px">
+    <div class="stat">
+      <div class="stat-lbl">Sessions this week</div>
+      <div class="stat-val" style="color:var(--accent)" id="w-sessions">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-lbl">Streak 🔥</div>
+      <div class="stat-val" id="w-streak">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-lbl">Avg sleep</div>
+      <div class="stat-val" id="w-sleep" style="font-size:22px">—</div>
+    </div>
+  </div>
+
+  <!-- Recent sessions -->
+  <div class="card" style="margin-bottom:10px">
+    <div class="ct">Recent Sessions</div>
+    <div id="workout-hist"></div>
+  </div>
+
+  <!-- ── NUTRITION & HYDRATION ── -->
+  <div class="sh">Nutrition & Hydration</div>
+
+  <div class="card">
+    <!-- Cal AI -->
+    <div class="ct">Meal Analysis</div>
+    <div id="cal-ai-section">
+      <div id="cal-ai-prompt" style="display:none">
+        <div class="banner b-blue" style="margin-bottom:12px">
+          <span style="font-size:20px">🤖</span>
+          <div style="flex:1;font-size:13px;color:var(--t2)">Add your Anthropic API key in Settings to enable AI meal analysis.</div>
+          <button class="btn btn-g btn-sm" data-nav="settings">Set up →</button>
+        </div>
+      </div>
+      <label for="meal-input" style="cursor:pointer">
+        <div class="btn btn-ai" style="width:100%;justify-content:center;margin-bottom:12px" id="snap-btn">
+          <span>📸</span> Snap a meal
+        </div>
+      </label>
+      <input type="file" id="meal-input" accept="image/*" capture="camera" style="display:none" onchange="handleMealPhoto(this)">
+      <div id="meal-loading" style="display:none;text-align:center;padding:20px">
+        <div class="spin" style="margin:0 auto 10px"></div>
+        <div style="font-size:13px;color:var(--t2)">Analysing your meal…</div>
+      </div>
+      <div id="meal-results"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Hydration Today — 4L Goal</div>
+    <div class="wrow" id="water-row"></div>
+    <div style="font-size:13px;color:var(--t2);margin-bottom:16px" id="water-lbl"></div>
+    <div class="bar" style="height:6px"><div class="bar-fill bar-b" id="water-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Nutrition Notes</div>
+    <textarea id="nutrition" rows="3" placeholder="Protein sources, fasting window, macros…" style="resize:none" oninput="saveNutrition()"></textarea>
+  </div>
+
+  <!-- ── SLEEP TREND ── -->
+  <div class="sh">Sleep</div>
+
+  <div class="card">
+    <div class="ct">7-Day Trend</div>
+    <div class="sc" id="sleep-chart"></div>
+  </div>
+
+  <!-- ── EVENTS ── -->
+  <div class="sh">
+    Events Today
+    <button class="btn btn-p btn-sm" onclick="openModal('m-event')">+ Add</button>
+  </div>
+
+  <div class="card">
+    <div id="t-events"></div>
+  </div>
+
+  <!-- ── QUICK NOTE ── -->
+  <div class="sh">Quick Note</div>
+  <div class="card">
+    <textarea id="t-note" rows="3" placeholder="What's on your mind today?" style="resize:none" oninput="saveTodayField('note',this.value)"></textarea>
+  </div>
+
+</div><!-- /today -->
+
+<!-- ══════════ SCHEDULE ══════════ -->
+<div class="section" id="s-schedule">
+
+  <div class="ph">
+    <div>
+      <div class="ph-title">Schedule 📅</div>
+      <div class="ph-sub">Calendar · Events · Appointments</div>
+    </div>
+    <button class="btn btn-p btn-sm" onclick="openModal('m-event')">+ Event</button>
+  </div>
+
+  <!-- GCal banner -->
+  <div class="banner b-orange" id="gcal-banner">
+    <span style="font-size:22px">📅</span>
+    <div style="flex:1">
+      <div style="font-weight:600;font-size:14px">Connect Google Calendar</div>
+      <div style="font-size:12px;color:var(--t2)">Paste your embed URL in Settings to sync</div>
+    </div>
+    <button class="btn btn-g btn-sm" data-nav="settings">Set up →</button>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="cal-nav">
+        <button class="btn btn-g btn-sm" onclick="calMove(-1)">←</button>
+        <div class="cal-nav-lbl" id="cal-lbl"></div>
+        <button class="btn btn-g btn-sm" onclick="calMove(1)">→</button>
+      </div>
+      <div class="cg" id="cal-hdr"></div>
+      <div class="cg" id="cal-days" style="margin-top:4px"></div>
+    </div>
+    <div class="card">
+      <div class="cr"><div class="ct">Upcoming</div></div>
+      <div id="upcoming-events"></div>
+    </div>
+  </div>
+
+  <!-- GCal embed -->
+  <div class="card" id="gcal-card" style="display:none">
+    <div class="ct">Google Calendar</div>
+    <iframe id="gcal-frame" style="width:100%;height:380px;border:none;border-radius:8px" src="" loading="lazy"></iframe>
+  </div>
+
+  <hr class="div">
+
+  <!-- Appointments -->
+  <div class="cr" style="margin-bottom:14px">
+    <div style="font-size:18px;font-weight:700">Appointments</div>
+    <button class="btn btn-p btn-sm" onclick="openModal('m-appt')">+ Add</button>
+  </div>
+
+  <div class="banner b-red">
+    <span style="font-size:24px">🦷</span>
+    <div style="flex:1">
+      <div style="font-weight:600;font-size:14px;color:var(--red)">Dentist — ~2 years overdue</div>
+      <div style="font-size:12px;color:var(--t2)">Book when back in Melbourne (May 15)</div>
+    </div>
+    <button class="btn btn-sm btn-rd" onclick="prefillAppt('Dentist','dental')">Book</button>
+  </div>
+
+  <div class="card">
+    <div id="appts-list"></div>
+  </div>
+
+</div><!-- /schedule -->
+
+<!-- ══════════ FLOOR35 ══════════ -->
+<div class="section" id="s-f35">
+
+  <div class="ph">
+    <div>
+      <div class="ph-title">Floor35 🚗</div>
+      <div class="ph-sub">Mobile car wash · Full-time from May 15</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+      <div style="font-size:56px;font-weight:900;letter-spacing:-3px;color:var(--accent);line-height:1" id="f35-days">—</div>
+      <div style="font-size:14px;font-weight:600;margin-top:6px">Days to launch</div>
+      <div style="font-size:12px;color:var(--t2);margin-top:3px">Melbourne · May 15 🚀</div>
+    </div>
+    <div class="card">
+      <div class="ct">Revenue Goal</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:6px">
+        <div style="font-size:30px;font-weight:800;letter-spacing:-2px;color:var(--accent)">$<span id="rev-cur">0</span></div>
+        <div style="color:var(--t2);font-size:13px">/ $<span id="rev-goal">10,000</span></div>
+      </div>
+      <div class="bar" style="height:7px"><div class="bar-fill" id="rev-bar" style="width:0%"></div></div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <input type="number" id="rev-add-val" placeholder="Add $" style="max-width:110px">
+        <button class="btn btn-p btn-sm" onclick="addRevenue()">+ Add</button>
+        <button class="btn btn-g btn-sm" onclick="setRevGoal()">Set goal</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Tasks</div>
+      <div id="f35-tasks"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <input id="f35-task-in" placeholder="Add task…" onkeydown="if(event.key==='Enter')addF35Task()">
+        <button class="btn btn-p btn-sm" onclick="addF35Task()">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="cr"><div class="ct">Pipeline</div><button class="btn btn-g btn-sm" onclick="openModal('m-prospect')">+ Add</button></div>
+      <div id="prospect-list"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Notes & Ideas</div>
+    <textarea id="f35-notes" rows="4" placeholder="Ideas, target areas, pricing, observations…" style="resize:none" oninput="saveF35Notes()"></textarea>
+  </div>
+
+</div><!-- /f35 -->
+
+<!-- ══════════ SETTINGS ══════════ -->
+<div class="section" id="s-settings">
+
+  <div class="ph">
+    <div class="ph-title">Settings ⚙️</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🤖 AI Meal Analysis (Cal AI)</div>
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:14px">
+      Get your free API key at <strong style="color:var(--text)">console.anthropic.com</strong> → API Keys → Create key. Free credits included when you sign up.
+    </p>
+    <div class="fg"><label>Anthropic API Key</label><input type="password" id="ant-key-in" placeholder="sk-ant-…"></div>
+    <button class="btn btn-p" onclick="saveAntKey()">Save API key</button>
+    <div id="ant-key-status" style="font-size:12px;color:var(--green);margin-top:8px;display:none">✓ API key saved</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">📅 Google Calendar</div>
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:14px">
+      Google Calendar → Settings → your calendar → <strong style="color:var(--text)">Integrate calendar</strong> → copy the <em>src="…"</em> URL from the embed code.
+    </p>
+    <div class="fg"><label>Embed URL</label><input type="url" id="gcal-url" placeholder="https://calendar.google.com/calendar/embed?src=…"></div>
+    <button class="btn btn-p" onclick="saveGcalUrl()">Save calendar</button>
+  </div>
+
+  <div class="card">
+    <div class="ct">⚡ Auto Step Count (Apple Health)</div>
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:16px">
+      Set up an iPhone Shortcut to automatically import your step count each morning.
+    </p>
+    <div style="background:var(--card2);border-radius:var(--rsm);padding:14px;font-size:13px;line-height:1.8;color:var(--t2)">
+      <strong style="color:var(--text)">iPhone → Shortcuts app → New Shortcut:</strong><br>
+      1. Add action: <strong style="color:var(--text)">"Get Health Sample"</strong> → Steps → Today<br>
+      2. Add action: <strong style="color:var(--text)">"Open URLs"</strong><br>
+      3. URL: <code id="steps-url" style="color:var(--accent);font-size:12px;word-break:break-all"></code><br>
+      4. Set as automation: <strong style="color:var(--text)">Daily at 8am</strong>
+    </div>
+    <p style="font-size:12px;color:var(--t3);margin-top:10px">Replace <em>YOUR-GITHUB-URL</em> with your actual GitHub Pages URL after deploying.</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">💪 Fitness Split Position</div>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:14px">Set where you are in the current 7-day cycle.</p>
+    <div class="fg">
+      <label>Today is…</label>
+      <select id="split-sel">
+        <option value="0">Day 1 — Push</option>
+        <option value="1">Day 2 — Pull</option>
+        <option value="2">Day 3 — Legs</option>
+        <option value="3">Day 4 — Rest</option>
+        <option value="4">Day 5 — Upper</option>
+        <option value="5">Day 6 — Lower</option>
+        <option value="6">Day 7 — Rest</option>
+      </select>
+    </div>
+    <button class="btn btn-p" onclick="saveSplit()">Save split</button>
+  </div>
+
+  <div class="card">
+    <div class="ct">About</div>
+    <p style="font-size:13px;color:var(--t2);line-height:1.8">
+      Built for Mitch Webster · 23 · Melbourne<br>
+      Floor35 CRM development company · Returning May 15 2026<br>
+      Data stored locally on this device
+    </p>
+  </div>
+
+</div><!-- /settings -->
+
+</div><!-- /content -->
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <div class="bn active" data-nav="today"><span class="icon">☀️</span>Today</div>
+  <div class="bn" data-nav="schedule"><span class="icon">📅</span>Schedule</div>
+  <div class="bn" data-nav="f35"><span class="icon">🚗</span>Floor35</div>
+  <div class="bn" data-nav="settings"><span class="icon">⚙️</span>Settings</div>
+</nav>
+</div><!-- /main -->
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Log Workout -->
+<div class="overlay" id="m-workout">
+  <div class="modal">
+    <div class="mh"><div class="mt">Log Session</div><div class="mx" onclick="closeModal('m-workout')">×</div></div>
+    <div class="g2" style="gap:10px">
+      <div class="fg"><label>Type</label>
+        <select id="wl-type">
+          <option value="Push">Push 🔴</option>
+          <option value="Pull">Pull 🟡</option>
+          <option value="Legs">Legs 🟢</option>
+          <option value="Upper">Upper 🔵</option>
+          <option value="Lower">Lower 🟣</option>
+          <option value="Cardio">Cardio 🏃</option>
+          <option value="Rest">Rest day</option>
+        </select>
+      </div>
+      <div class="fg"><label>Duration (min)</label><input type="number" id="wl-dur" placeholder="60" min="10" max="300"></div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label>Exercises <span style="color:var(--t3);font-weight:400">(optional)</span></label>
+      <div id="ex-list">
+        <div class="exrow">
+          <input placeholder="Exercise" class="ex-n">
+          <input type="number" placeholder="Sets" class="ex-s" min="1">
+          <input type="number" placeholder="Reps" class="ex-r" min="1">
+          <input type="number" placeholder="kg" class="ex-w" min="0" step="2.5">
+          <span onclick="this.closest('.exrow').remove()" style="cursor:pointer;color:var(--t3);font-size:20px;text-align:center;padding-top:2px">×</span>
+        </div>
+      </div>
+      <button class="btn btn-g btn-sm" onclick="addExRow()" style="margin-top:8px">+ Exercise</button>
+    </div>
+    <div class="fg"><label>Notes</label><input id="wl-notes" placeholder="How'd it feel? Any PRs?"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-g" onclick="closeModal('m-workout')">Cancel</button>
+      <button class="btn btn-p" onclick="saveWorkout()">Log it 💪</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Add Event -->
+<div class="overlay" id="m-event">
+  <div class="modal">
+    <div class="mh"><div class="mt">Add Event</div><div class="mx" onclick="closeModal('m-event')">×</div></div>
+    <div class="fg"><label>Title</label><input id="ev-title" placeholder="Event name"></div>
+    <div class="g2" style="gap:10px">
+      <div class="fg"><label>Date</label><input type="date" id="ev-date"></div>
+      <div class="fg"><label>Time</label><input type="time" id="ev-time"></div>
+    </div>
+    <div class="fg"><label>Type</label>
+      <select id="ev-type">
+        <option value="personal">🟠 Personal</option>
+        <option value="f35">🚗 Floor35</option>
+        <option value="health">❤️ Health</option>
+        <option value="social">🎉 Social</option>
+      </select>
+    </div>
+    <div class="fg"><label>Notes</label><input id="ev-notes" placeholder="Optional…"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeModal('m-event')">Cancel</button>
+      <button class="btn btn-p" onclick="saveEvent()">Save event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Appointment -->
+<div class="overlay" id="m-appt">
+  <div class="modal">
+    <div class="mh"><div class="mt">Add Appointment</div><div class="mx" onclick="closeModal('m-appt')">×</div></div>
+    <div class="fg"><label>Title</label><input id="ap-title" placeholder="e.g. Dentist, Haircut, GP"></div>
+    <div class="g2" style="gap:10px">
+      <div class="fg"><label>Date</label><input type="date" id="ap-date"></div>
+      <div class="fg"><label>Time</label><input type="time" id="ap-time"></div>
+    </div>
+    <div class="fg"><label>Type</label>
+      <select id="ap-type">
+        <option value="medical">🏥 Medical</option>
+        <option value="dental">🦷 Dental</option>
+        <option value="grooming">✂️ Haircut / Grooming</option>
+        <option value="f35">🚗 Floor35</option>
+        <option value="other">📌 Other</option>
+      </select>
+    </div>
+    <div class="fg"><label>Notes</label><input id="ap-notes" placeholder="Location, provider, etc."></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeModal('m-appt')">Cancel</button>
+      <button class="btn btn-p" onclick="saveAppt()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Prospect -->
+<div class="overlay" id="m-prospect">
+  <div class="modal">
+    <div class="mh"><div class="mt">Add Prospect</div><div class="mx" onclick="closeModal('m-prospect')">×</div></div>
+    <div class="fg"><label>Business Name</label><input id="pr-name" placeholder="e.g. Melbourne BMW dealership"></div>
+    <div class="fg"><label>Contact</label><input id="pr-contact" placeholder="Name, phone, email"></div>
+    <div class="fg"><label>Status</label>
+      <select id="pr-status">
+        <option value="lead">🔵 Lead — not approached yet</option>
+        <option value="contacted">🟡 Contacted</option>
+        <option value="meeting">🟠 Meeting booked</option>
+        <option value="won">🟢 Won!</option>
+        <option value="lost">⚫ Not interested</option>
+      </select>
+    </div>
+    <div class="fg"><label>Notes</label><textarea id="pr-notes" rows="2" placeholder="Location, fleet size, notes…" style="resize:none"></textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeModal('m-prospect')">Cancel</button>
+      <button class="btn btn-p" onclick="saveProspect()">Add prospect</button>
+    </div>
+  </div>
+</div>
+
+<div class="tw" id="tw"></div>
+
+<script>
+// ══════════════════════════════
+// STORAGE
+// ══════════════════════════════
+const S={
+  g:(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch{return d}},
+  s:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+};
+
+// ══════════════════════════════
+// NAV
+// ══════════════════════════════
+const SMAP={today:'s-today',schedule:'s-schedule',f35:'s-f35',settings:'s-settings'};
+function navigate(key){
+  if(!SMAP[key])return;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(SMAP[key]).classList.add('active');
+  document.querySelectorAll('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===key));
+  document.getElementById('content').scrollTop=0;
+  if(key==='schedule')renderSchedule();
+  if(key==='f35')renderF35();
+  if(key==='settings')initSettings();
+}
+document.querySelectorAll('[data-nav]').forEach(el=>el.addEventListener('click',()=>navigate(el.dataset.nav)));
+document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open')}));
+function openModal(id){
+  document.getElementById(id).classList.add('open');
+  const di=document.querySelector(`#${id} input[type=date]`);
+  if(di&&!di.value)di.value=todayStr();
+}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+// ══════════════════════════════
+// UTILS
+// ══════════════════════════════
+function todayStr(){return new Date().toISOString().split('T')[0]}
+function fmtDate(d){return new Date(d+'T00:00:00').toLocaleDateString('en-AU',{day:'numeric',month:'short'})}
+function daysBetween(a,b){return Math.ceil((new Date(b)-new Date(a))/86400000)}
+function toast(msg){
+  const el=document.createElement('div');
+  el.className='toast';el.textContent=msg;
+  const w=document.getElementById('tw');w.innerHTML='';w.appendChild(el);
+  setTimeout(()=>el.remove(),2800);
+  if(navigator.vibrate)navigator.vibrate(30);
+}
+function typeTag(t){return{personal:'tag-o',f35:'tag-b',health:'tag-g',social:'tag-y',medical:'tag-b',dental:'tag-r',grooming:'tag-y',other:'tag-o'}[t]||'tag-o'}
+function typeEmoji(t){return{medical:'🏥',dental:'🦷',grooming:'✂️',f35:'🚗',other:'📌'}[t]||'📌'}
+
+// ══════════════════════════════
+// TODAY INIT
+// ══════════════════════════════
+function initToday(){
+  // Greeting
+  const h=new Date().getHours();
+  document.getElementById('greeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', Mitch 👋';
+  document.getElementById('today-date').textContent=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Check for steps in URL params (from Apple Health Shortcut)
+  const params=new URLSearchParams(window.location.search);
+  const stepsParam=params.get('steps');
+  if(stepsParam){
+    saveTodayField('steps',parseInt(stepsParam));
+    saveTodayField('stepsAuto',true);
+    window.history.replaceState({},'',window.location.pathname);
+    toast('⚡ Steps synced from Apple Health');
+  }
+
+  // Chips
+  const melb=daysBetween(todayStr(),'2026-05-15');
+  const sober=daysBetween('2026-04-15',todayStr());
+  let c='';
+  if(melb>0)c+=`<span class="chip chip-o">🛫 ${melb} days to Melbourne</span>`;
+  if(sober>=0)c+=`<span class="chip chip-g">🥃 ${sober} days alcohol-free</span>`;
+  document.getElementById('chips').innerHTML=c;
+
+  // Load today data
+  const td=S.g('td-'+todayStr(),{});
+  if(td.sleep){document.getElementById('t-sleep').value=td.sleep}
+  if(td.sleepQ){document.getElementById('t-sleep-q').value=td.sleepQ}
+  if(td.steps){document.getElementById('t-steps').value=td.steps;updateStepBar()}
+  if(td.stepsAuto)document.getElementById('steps-auto-badge').style.display='inline-flex';
+  if(td.energy)setEnergy(td.energy,false);
+  if(td.note)document.getElementById('t-note').value=td.note;
+
+  renderSplitTrack();
+  renderWorkoutHist();
+  renderWeekStats();
+  renderMealResults();
+  renderWater();
+  renderSleepChart();
+  renderTodayEvents();
+  document.getElementById('nutrition').value=S.g('nut-'+todayStr(),'');
+
+  // Show Cal AI prompt if no API key
+  const hasKey=!!S.g('ant-key','');
+  document.getElementById('cal-ai-prompt').style.display=hasKey?'none':'block';
+  document.getElementById('snap-btn').style.display=hasKey?'flex':'none';
+}
+
+function saveTodayField(f,v){
+  const td=S.g('td-'+todayStr(),{});
+  td[f]=v;S.s('td-'+todayStr(),td);
+}
+function updateStepBar(){
+  const v=parseInt(document.getElementById('t-steps').value)||0;
+  document.getElementById('step-bar').style.width=Math.min(100,v/100)+'%';
+}
+function setEnergy(v,save=true){
+  for(let i=1;i<=5;i++)document.getElementById('e'+i).classList.toggle('sel',i===v);
+  if(save)saveTodayField('energy',v);
+}
+
+// ══════════════════════════════
+// SPLIT TRACKER
+// ══════════════════════════════
+const SPLIT=['Push','Pull','Legs','Rest','Upper','Lower','Rest'];
+const SICON=['🔴','🟡','🟢','💤','🔵','🟣','💤'];
+
+function renderSplitTrack(){
+  const day=S.g('split-day',3); // default Day 4 = Rest
+  document.getElementById('split-track').innerHTML=SPLIT.map((s,i)=>`
+    <div class="split-row ${i===day?'today':i<day?'done':''}">
+      <div class="split-num">Day ${i+1}</div>
+      <div class="split-name">${SICON[i]} ${s}</div>
+      ${i===day?'<span class="tag tag-o">Today</span>':''}
+    </div>`).join('');
+  // Update header
+  const cur=S.g('split-day',3);
+  document.getElementById('t-workout-name').textContent=SICON[cur]+' '+SPLIT[cur];
+  const isRest=SPLIT[cur]==='Rest';
+  document.getElementById('t-workout-tag').innerHTML=isRest
+    ?'<span class="tag tag-o">Recovery day</span>'
+    :`<span class="tag tag-o">Day ${cur+1} of 7</span>`;
+}
+function shiftSplit(d){S.s('split-day',((S.g('split-day',3)+d)+7)%7);renderSplitTrack()}
+
+// ══════════════════════════════
+// WORKOUTS
+// ══════════════════════════════
+function addExRow(){
+  const row=document.createElement('div');row.className='exrow';
+  row.innerHTML=`<input placeholder="Exercise" class="ex-n"><input type="number" placeholder="Sets" class="ex-s" min="1"><input type="number" placeholder="Reps" class="ex-r" min="1"><input type="number" placeholder="kg" class="ex-w" min="0" step="2.5"><span onclick="this.closest('.exrow').remove()" style="cursor:pointer;color:var(--t3);font-size:20px;text-align:center;padding-top:2px">×</span>`;
+  document.getElementById('ex-list').appendChild(row);
+}
+
+function saveWorkout(){
+  const type=document.getElementById('wl-type').value;
+  const dur=parseInt(document.getElementById('wl-dur').value)||null;
+  const notes=document.getElementById('wl-notes').value;
+  const exs=[...document.querySelectorAll('#ex-list .exrow')].map(r=>({
+    name:r.querySelector('.ex-n').value,sets:r.querySelector('.ex-s').value,
+    reps:r.querySelector('.ex-r').value,kg:r.querySelector('.ex-w').value
+  })).filter(e=>e.name.trim());
+  const ws=S.g('workouts',[]); ws.unshift({id:Date.now(),date:todayStr(),type,dur,exs,notes});
+  S.s('workouts',ws);
+  if(type!=='Rest')S.s('split-day',(S.g('split-day',3)+1)%7);
+  document.getElementById('wl-dur').value='';document.getElementById('wl-notes').value='';
+  document.getElementById('ex-list').innerHTML=`<div class="exrow"><input placeholder="Exercise" class="ex-n"><input type="number" placeholder="Sets" class="ex-s" min="1"><input type="number" placeholder="Reps" class="ex-r" min="1"><input type="number" placeholder="kg" class="ex-w" min="0" step="2.5"><span onclick="this.closest('.exrow').remove()" style="cursor:pointer;color:var(--t3);font-size:20px;text-align:center;padding-top:2px">×</span></div>`;
+  closeModal('m-workout');
+  renderSplitTrack();renderWorkoutHist();renderWeekStats();
+  toast('💪 Session logged!');
+}
+
+function renderWorkoutHist(){
+  const ws=S.g('workouts',[]).slice(0,5);
+  if(!ws.length){document.getElementById('workout-hist').innerHTML='<div class="empty" style="padding:16px 0"><div class="icon">🏋️</div><p>No sessions yet — log your first</p></div>';return}
+  document.getElementById('workout-hist').innerHTML=ws.map(w=>`
+    <div class="lr">
+      <div>
+        <div style="font-weight:600">${SICON[SPLIT.indexOf(w.type)]||'🏋️'} ${w.type}</div>
+        <div style="font-size:12px;color:var(--t2);margin-top:2px">
+          ${w.exs.length?w.exs.slice(0,3).map(e=>`${e.name}${e.sets?` ${e.sets}×${e.reps}`:''}${e.kg?`@${e.kg}kg`:''}`).join(' · '):(w.notes||'—')}
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:12px;color:var(--t2)">${fmtDate(w.date)}</div>
+        ${w.dur?`<div style="font-size:12px;color:var(--t3)">${w.dur}min</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderWeekStats(){
+  const now=new Date(),start=new Date(now);
+  start.setDate(now.getDate()-now.getDay());
+  const ss=start.toISOString().split('T')[0];
+  const ws=S.g('workouts',[]).filter(w=>w.date>=ss&&w.type!=='Rest');
+  document.getElementById('w-sessions').textContent=ws.length;
+  let streak=0,chk=new Date(),all=S.g('workouts',[]);
+  while(true){const ds=chk.toISOString().split('T')[0];if(all.find(w=>w.date===ds&&w.type!=='Rest')){streak++;chk.setDate(chk.getDate()-1)}else break}
+  document.getElementById('w-streak').textContent=streak;
+  const sl=S.g('sleep-log',[]).filter(s=>s.date>=ss);
+  document.getElementById('w-sleep').textContent=sl.length?(sl.reduce((a,b)=>a+b.hrs,0)/sl.length).toFixed(1)+'h':'—';
+}
+
+// ══════════════════════════════
+// CAL AI (MEAL PHOTO)
+// ══════════════════════════════
+async function compressImg(file){
+  return new Promise(resolve=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const max=800,scale=Math.min(max/img.width,max/img.height,1);
+        const c=document.createElement('canvas');
+        c.width=img.width*scale;c.height=img.height*scale;
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        const full=c.toDataURL('image/jpeg',0.8);
+        // thumb for storage
+        const tc=document.createElement('canvas');
+        const ts=Math.min(80/img.width,80/img.height,1)*img.width>0?Math.min(80,c.width):80;
+        tc.width=tc.height=80;
+        const tctx=tc.getContext('2d');
+        const ar=c.width/c.height,tw=ar>1?80:80*ar,th=ar>1?80/ar:80;
+        tctx.drawImage(c,(80-tw)/2,(80-th)/2,tw,th);
+        resolve({base64:full.split(',')[1],thumb:tc.toDataURL('image/jpeg',0.6)});
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleMealPhoto(input){
+  if(!input.files||!input.files[0])return;
+  const key=S.g('ant-key','');
+  if(!key){toast('Add API key in Settings first');navigate('settings');return}
+  document.getElementById('meal-loading').style.display='block';
+  document.getElementById('snap-btn').style.pointerEvents='none';
+  try{
+    const {base64,thumb}=await compressImg(input.files[0]);
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:200,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},
+          {type:'text',text:'Estimate calories and macros for this meal. Reply in EXACTLY this format on one line:\n[Meal name] · ~[X] cal · Protein [X]g · Carbs [X]g · Fat [X]g\nBe concise and direct.'}
+        ]}]
+      })
+    });
+    if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||'API error '+resp.status)}
+    const data=await resp.json();
+    const result=data.content[0].text.trim();
+    const meals=S.g('meals-'+todayStr(),[]);
+    meals.unshift({id:Date.now(),thumb,result,ts:new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})});
+    S.s('meals-'+todayStr(),meals.slice(0,6));
+    renderMealResults();
+    toast('🍽️ Meal analysed!');
+  }catch(err){
+    toast('Error: '+(err.message||'Try again'));
+    console.error(err);
+  }finally{
+    document.getElementById('meal-loading').style.display='none';
+    document.getElementById('snap-btn').style.pointerEvents='';
+    input.value='';
+  }
+}
+
+function renderMealResults(){
+  const meals=S.g('meals-'+todayStr(),[]);
+  const el=document.getElementById('meal-results');
+  if(!meals.length){el.innerHTML='<div style="font-size:13px;color:var(--t3);padding:4px 0">No meals logged today</div>';return}
+  el.innerHTML=meals.map(m=>`
+    <div class="ai-result">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        ${m.thumb?`<img src="${m.thumb}" class="meal-thumb" alt="meal">`:''}
+        <div>
+          <div class="ai-badge">🤖 AI Analysis · ${m.ts}</div>
+          <div>${m.result}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════
+// WATER (500ml)
+// ══════════════════════════════
+function renderWater(){
+  const n=S.g('water-'+todayStr(),0),goal=8;
+  document.getElementById('water-row').innerHTML=Array.from({length:goal},(_,i)=>
+    `<div class="wbottle ${i<n?'full':''}" onclick="setWater(${i+1})"><span class="wlbl">500ml</span></div>`).join('');
+  const litres=(n*0.5).toFixed(1);
+  document.getElementById('water-lbl').textContent=`${n} / ${goal} bottles · ${litres}L / 4L`;
+  document.getElementById('water-bar').style.width=Math.min(100,(n/goal)*100)+'%';
+}
+function setWater(n){S.s('water-'+todayStr(),n);renderWater()}
+
+// ══════════════════════════════
+// NUTRITION
+// ══════════════════════════════
+function saveNutrition(){S.s('nut-'+todayStr(),document.getElementById('nutrition').value)}
+
+// ══════════════════════════════
+// SLEEP
+// ══════════════════════════════
+function syncSleepLog(){
+  const hrs=parseFloat(document.getElementById('t-sleep').value);
+  if(!hrs||hrs<1)return;
+  const qual=document.getElementById('t-sleep-q').value||'good';
+  const date=todayStr();
+  const logs=S.g('sleep-log',[]).filter(s=>s.date!==date);
+  logs.push({date,hrs,qual});
+  logs.sort((a,b)=>b.date.localeCompare(a.date));
+  S.s('sleep-log',logs);
+  renderSleepChart();renderWeekStats();
+}
+function logSleep(){
+  const date=document.getElementById('sl-date').value;
+  const hrs=parseFloat(document.getElementById('sl-hrs').value);
+  const qual=document.getElementById('sl-qual').value;
+  if(!date||!hrs)return toast('Fill in date and hours');
+  const logs=S.g('sleep-log',[]).filter(s=>s.date!==date);
+  logs.push({date,hrs,qual});
+  logs.sort((a,b)=>b.date.localeCompare(a.date));
+  S.s('sleep-log',logs);
+  closeModal('m-sleep');
+  renderSleepChart();renderWeekStats();
+  toast('😴 Sleep logged!');
+}
+
+function renderSleepChart(){
+  const logs=S.g('sleep-log',[]).slice(0,7).reverse();
+  const el=document.getElementById('sleep-chart');
+  if(!logs.length){el.innerHTML='<p style="font-size:13px;color:var(--t3)">Log some sleep to see your trend</p>';return}
+  const max=Math.max(...logs.map(l=>l.hrs),9);
+  el.innerHTML=logs.map(l=>{
+    const h=(l.hrs/max)*64;
+    const c=l.hrs>=7?'var(--green)':l.hrs>=6?'var(--yellow)':'var(--red)';
+    return`<div class="sc-col">
+      <div style="font-size:10px;color:var(--t3)">${l.hrs}h</div>
+      <div class="sc-bar" style="height:${h}px;background:${c}"></div>
+      <div class="sc-lbl">${l.date.slice(5)}</div>
+    </div>`;}).join('');
+}
+
+// ══════════════════════════════
+// TODAY EVENTS
+// ══════════════════════════════
+function renderTodayEvents(){
+  const today=todayStr();
+  const evs=S.g('events',[]).filter(e=>e.date===today);
+  const el=document.getElementById('t-events');
+  if(!evs.length){el.innerHTML='<div class="empty" style="padding:16px 0"><div class="icon">📅</div><p>Nothing on today</p></div>';return}
+  el.innerHTML=evs.map(e=>`
+    <div class="li">
+      <div class="li-info">
+        <div class="li-title">${e.title}</div>
+        <div class="li-sub">${e.time||'All day'}${e.notes?' · '+e.notes:''}</div>
+      </div>
+      <span class="tag ${typeTag(e.type)}">${e.type}</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════
+// SCHEDULE (Calendar + Appointments)
+// ══════════════════════════════
+let calM=new Date().getMonth(),calY=new Date().getFullYear();
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function renderSchedule(){
+  renderCalendar();
+  renderAppts();
+  const url=S.g('gcal-url','');
+  document.getElementById('gcal-banner').style.display=url?'none':'flex';
+  document.getElementById('gcal-card').style.display=url?'block':'none';
+  if(url)document.getElementById('gcal-frame').src=url;
+}
+
+function renderCalendar(){
+  document.getElementById('cal-lbl').textContent=`${MONTHS[calM]} ${calY}`;
+  document.getElementById('cal-hdr').innerHTML=['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="ch">${d}</div>`).join('');
+  const first=new Date(calY,calM,1).getDay(),total=new Date(calY,calM+1,0).getDate(),prev=new Date(calY,calM,0).getDate();
+  const events=S.g('events',[]),today=todayStr();
+  let html='';
+  for(let i=first-1;i>=0;i--)html+=`<div class="cd om">${prev-i}</div>`;
+  for(let d=1;d<=total;d++){
+    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html+=`<div class="cd ${ds===today?'today':''} ${events.some(e=>e.date===ds)?'has-ev':''}" onclick="quickAddEvent('${ds}')">${d}</div>`;
+  }
+  const rem=42-(first+total);
+  for(let d=1;d<=rem;d++)html+=`<div class="cd om">${d}</div>`;
+  document.getElementById('cal-days').innerHTML=html;
+  renderUpcoming();
+}
+
+function calMove(d){calM+=d;if(calM>11){calM=0;calY++}if(calM<0){calM=11;calY--}renderCalendar()}
+function quickAddEvent(date){document.getElementById('ev-date').value=date;openModal('m-event')}
+
+function saveEvent(){
+  const title=document.getElementById('ev-title').value.trim();
+  const date=document.getElementById('ev-date').value;
+  if(!title||!date)return toast('Add a title and date');
+  const ev={id:Date.now(),title,date,time:document.getElementById('ev-time').value,type:document.getElementById('ev-type').value,notes:document.getElementById('ev-notes').value};
+  const evs=S.g('events',[]);evs.push(ev);evs.sort((a,b)=>a.date.localeCompare(b.date));S.s('events',evs);
+  closeModal('m-event');
+  document.getElementById('ev-title').value='';document.getElementById('ev-notes').value='';
+  renderUpcoming();renderTodayEvents();
+  if(document.getElementById('s-schedule').classList.contains('active'))renderCalendar();
+  toast('📅 Event saved!');
+}
+
+function renderUpcoming(){
+  const today=todayStr(),evs=S.g('events',[]).filter(e=>e.date>=today).slice(0,8);
+  const el=document.getElementById('upcoming-events');
+  if(!evs.length){el.innerHTML='<div class="empty"><div class="icon">📅</div><p>No upcoming events</p></div>';return}
+  el.innerHTML=evs.map(e=>`
+    <div class="li">
+      <div class="li-info">
+        <div class="li-title">${e.title}</div>
+        <div class="li-sub">${fmtDate(e.date)}${e.time?' · '+e.time:''}${e.notes?' · '+e.notes:''}</div>
+      </div>
+      <span class="tag ${typeTag(e.type)}">${e.type}</span>
+    </div>`).join('');
+}
+
+// APPOINTMENTS
+function renderAppts(){
+  const appts=S.g('appts',[]);
+  const el=document.getElementById('appts-list');
+  if(!appts.length){el.innerHTML='<div class="empty"><div class="icon">📋</div><p>No appointments yet</p></div>';return}
+  const today=todayStr();
+  el.innerHTML=[...appts].sort((a,b)=>a.date.localeCompare(b.date)).map(a=>{
+    const dt=new Date(a.date+'T00:00:00');
+    return`<div class="li" style="${a.date<today?'opacity:.4':''}">
+      <div style="min-width:40px;text-align:center">
+        <div style="font-size:22px;font-weight:800;line-height:1;letter-spacing:-1px">${dt.getDate()}</div>
+        <div style="font-size:11px;color:var(--t2)">${dt.toLocaleDateString('en-AU',{month:'short'})}</div>
+      </div>
+      <div class="li-info">
+        <div class="li-title">${typeEmoji(a.type)} ${a.title}</div>
+        <div class="li-sub">${a.time||''}${a.notes?(a.time?' · ':'')+a.notes:''}</div>
+      </div>
+      <button onclick="delAppt(${a.id})" style="background:none;border:none;color:var(--t4);cursor:pointer;font-size:20px;padding:4px">×</button>
+    </div>`;}).join('');
+}
+
+function prefillAppt(title,type){document.getElementById('ap-title').value=title;document.getElementById('ap-type').value=type;openModal('m-appt')}
+
+function saveAppt(){
+  const title=document.getElementById('ap-title').value.trim(),date=document.getElementById('ap-date').value;
+  if(!title||!date)return toast('Add title and date');
+  const a={id:Date.now(),title,date,time:document.getElementById('ap-time').value,type:document.getElementById('ap-type').value,notes:document.getElementById('ap-notes').value};
+  const appts=S.g('appts',[]);appts.push(a);S.s('appts',appts);
+  closeModal('m-appt');document.getElementById('ap-title').value='';document.getElementById('ap-notes').value='';
+  renderAppts();toast('✅ Appointment saved!');
+}
+
+function delAppt(id){S.s('appts',S.g('appts',[]).filter(a=>a.id!==id));renderAppts()}
+
+// ══════════════════════════════
+// FLOOR35
+// ══════════════════════════════
+function renderF35(){
+  const days=daysBetween(todayStr(),'2026-05-15');
+  document.getElementById('f35-days').textContent=days>0?days:'🚀';
+  const cur=S.g('f35-rev',0),goal=S.g('f35-goal',10000);
+  document.getElementById('rev-cur').textContent=cur.toLocaleString();
+  document.getElementById('rev-goal').textContent=goal.toLocaleString();
+  document.getElementById('rev-bar').style.width=Math.min(100,(cur/goal)*100)+'%';
+  renderF35Tasks();renderProspects();
+  document.getElementById('f35-notes').value=S.g('f35-notes','');
+}
+
+function addRevenue(){
+  const v=parseFloat(document.getElementById('rev-add-val').value);if(!v)return;
+  S.s('f35-rev',S.g('f35-rev',0)+v);document.getElementById('rev-add-val').value='';renderF35();toast(`💰 $${v} added!`);
+}
+function setRevGoal(){const v=prompt('Revenue goal ($)',S.g('f35-goal',10000));if(v&&!isNaN(+v)){S.s('f35-goal',+v);renderF35()}}
+
+function renderF35Tasks(){
+  const tasks=S.g('f35-tasks',[]);
+  if(!tasks.length){document.getElementById('f35-tasks').innerHTML='<div style="color:var(--t3);font-size:13px;padding:6px 0">No tasks yet</div>';return}
+  document.getElementById('f35-tasks').innerHTML=tasks.map((t,i)=>`
+    <div class="lr" style="padding:8px 0;align-items:center">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;color:${t.done?'var(--t3)':'var(--text)'};${t.done?'text-decoration:line-through':''}">
+        <input type="checkbox" ${t.done?'checked':''} onchange="toggleF35Task(${i})" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent)">
+        <span style="font-size:14px">${t.text}</span>
+      </label>
+      <button onclick="delF35Task(${i})" style="background:none;border:none;color:var(--t4);cursor:pointer;font-size:18px">×</button>
+    </div>`).join('');
+}
+
+function addF35Task(){const inp=document.getElementById('f35-task-in'),t=inp.value.trim();if(!t)return;const tasks=S.g('f35-tasks',[]);tasks.push({text:t,done:false});S.s('f35-tasks',tasks);inp.value='';renderF35Tasks()}
+function toggleF35Task(i){const t=S.g('f35-tasks',[]);t[i].done=!t[i].done;S.s('f35-tasks',t);renderF35Tasks()}
+function delF35Task(i){S.s('f35-tasks',S.g('f35-tasks',[]).filter((_,j)=>j!==i));renderF35Tasks()}
+function saveF35Notes(){S.s('f35-notes',document.getElementById('f35-notes').value)}
+
+const PIPE={lead:'var(--blue)',contacted:'var(--yellow)',meeting:'var(--accent)',won:'var(--green)',lost:'var(--t4)'};
+
+function renderProspects(){
+  const ps=S.g('f35-prospects',[]);
+  const el=document.getElementById('prospect-list');
+  if(!ps.length){el.innerHTML='<div class="empty" style="padding:16px 0"><div class="icon">🤝</div><p>Add prospects as you approach businesses</p></div>';return}
+  el.innerHTML=ps.map((p,i)=>`
+    <div class="lr" style="padding:9px 0">
+      <div class="pdot" style="background:${PIPE[p.status]||'var(--t4)'}"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:14px">${p.name}</div>
+        <div style="font-size:12px;color:var(--t2)">${p.status}${p.contact?' · '+p.contact:''}</div>
+      </div>
+      <button onclick="delProspect(${i})" style="background:none;border:none;color:var(--t4);cursor:pointer;font-size:18px">×</button>
+    </div>`).join('');
+}
+
+function saveProspect(){
+  const name=document.getElementById('pr-name').value.trim();if(!name)return toast('Enter a business name');
+  const p={name,contact:document.getElementById('pr-contact').value,status:document.getElementById('pr-status').value,notes:document.getElementById('pr-notes').value};
+  const ps=S.g('f35-prospects',[]);ps.push(p);S.s('f35-prospects',ps);
+  closeModal('m-prospect');document.getElementById('pr-name').value='';document.getElementById('pr-contact').value='';document.getElementById('pr-notes').value='';
+  renderProspects();toast('🤝 Prospect added!');
+}
+function delProspect(i){S.s('f35-prospects',S.g('f35-prospects',[]).filter((_,j)=>j!==i));renderProspects()}
+
+// ══════════════════════════════
+// SETTINGS
+// ══════════════════════════════
+function initSettings(){
+  const url=S.g('gcal-url','');if(url)document.getElementById('gcal-url').value=url;
+  document.getElementById('split-sel').value=S.g('split-day',3);
+  const key=S.g('ant-key','');
+  if(key){document.getElementById('ant-key-in').value='sk-ant-••••••••';document.getElementById('ant-key-status').style.display='block'}
+  // Steps shortcut URL
+  const host=window.location.origin+window.location.pathname;
+  document.getElementById('steps-url').textContent=host+'?steps=[Steps]';
+}
+function saveAntKey(){
+  const v=document.getElementById('ant-key-in').value.trim();
+  if(!v||v.includes('••'))return toast('Paste a valid API key');
+  S.s('ant-key',v);
+  document.getElementById('ant-key-status').style.display='block';
+  // Refresh Cal AI section on today
+  document.getElementById('cal-ai-prompt').style.display='none';
+  document.getElementById('snap-btn').style.display='flex';
+  toast('🤖 API key saved!');
+}
+function saveGcalUrl(){S.s('gcal-url',document.getElementById('gcal-url').value.trim());toast('📅 Calendar saved!')}
+function saveSplit(){S.s('split-day',parseInt(document.getElementById('split-sel').value));renderSplitTrack();toast('💪 Split updated!')}
+
+// ══════════════════════════════
+// SERVICE WORKER
+// ══════════════════════════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+
+// ══════════════════════════════
+// BOOT
+// ══════════════════════════════
+initToday();
+</script>
+</body>
+</html>
